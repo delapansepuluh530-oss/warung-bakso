@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bakso Sultan Tycoon</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdf2e9; text-align: center; color: #5d4037; }
+        #game-container { max-width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .money-display { font-size: 32px; font-weight: bold; color: #2ecc71; margin: 10px 0; }
+        #bakso-btn { 
+            width: 180px; cursor: pointer; transition: transform 0.1s; 
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+        }
+        #bakso-btn:active { transform: scale(0.9); }
+        .upgrade-section { margin-top: 20px; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; }
+        .upgrade-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: white; border: 1px solid #ddd; border-radius: 8px; }
+        button { background: #e67e22; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .status { font-size: 14px; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>🍜 Warung Bakso Sultan</h1>
+    <div class="money-display">Rp <span id="money">0</span></div>
+    <div class="status">Uang per klik: Rp <span id="per-click">100</span></div>
+    <div class="status">Pendapatan otomatis: Rp <span id="per-sec">0</span>/detik</div>
+    
+    <br>
+    <!-- Kamu bisa ganti teks ini dengan emoji atau gambar bakso -->
+    <div id="bakso-btn" onclick="jualBakso()" style="font-size: 80px; margin: 0 auto;">🥣</div>
+    <p>Klik Mangkok untuk Jualan!</p>
+
+    <div class="upgrade-section">
+        <h3>Peralatan & Karyawan:</h3>
+        
+        <div class="upgrade-item">
+            <div>
+                <strong>Kecap Spesial</strong><br>
+                <small>Klik jadi +Rp 50</small>
+            </div>
+            <button id="up-click" onclick="buyUpgrade('click')">Beli (Rp 500)</button>
+        </div>
+
+        <div class="upgrade-item">
+            <div>
+                <strong>Rekrut Tukang Cuci</strong><br>
+                <small>Otomatis +Rp 200/detik</small>
+            </div>
+            <button id="up-auto" onclick="buyUpgrade('auto')">Beli (Rp 2.000)</button>
+        </div>
+
+        <div class="upgrade-item">
+            <div>
+                <strong>Buka Cabang Baru</strong><br>
+                <small>Otomatis +Rp 1.500/detik</small>
+            </div>
+            <button id="up-branch" onclick="buyUpgrade('branch')">Beli (Rp 15.000)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let money = 0;
+    let moneyPerClick = 100;
+    let moneyPerSec = 0;
+
+    let costClick = 500;
+    let costAuto = 2000;
+    let costBranch = 15000;
+
+    function updateDisplay() {
+        document.getElementById('money').innerText = money.toLocaleString();
+        document.getElementById('per-click').innerText = moneyPerClick.toLocaleString();
+        document.getElementById('per-sec').innerText = moneyPerSec.toLocaleString();
+        
+        // Cek apakah uang cukup untuk beli upgrade
+        document.getElementById('up-click').disabled = (money < costClick);
+        document.getElementById('up-auto').disabled = (money < costAuto);
+        document.getElementById('up-branch').disabled = (money < costBranch);
+    }
+
+    function jualBakso() {
+        money += moneyPerClick;
+        updateDisplay();
+    }
+
+    function buyUpgrade(type) {
+        if (type === 'click' && money >= costClick) {
+            money -= costClick;
+            moneyPerClick += 50;
+            costClick = Math.floor(costClick * 1.5);
+            document.getElementById('up-click').innerText = `Beli (Rp ${costClick.toLocaleString()})`;
+        } else if (type === 'auto' && money >= costAuto) {
+            money -= costAuto;
+            moneyPerSec += 200;
+            costAuto = Math.floor(costAuto * 1.6);
+            document.getElementById('up-auto').innerText = `Beli (Rp ${costAuto.toLocaleString()})`;
+        } else if (type === 'branch' && money >= costBranch) {
+            money -= costBranch;
+            moneyPerSec += 1500;
+            costBranch = Math.floor(costBranch * 1.8);
+            document.getElementById('up-branch').innerText = `Beli (Rp ${costBranch.toLocaleString()})`;
+        }
+        updateDisplay();
+    }
+
+    // Fungsi untuk pendapatan otomatis per detik
+    setInterval(() => {
+        if (moneyPerSec > 0) {
+            money += moneyPerSec;
+            updateDisplay();
+        }
+    }, 1000);
+
+    updateDisplay();
+</script>
+
+</body>
+</html>
